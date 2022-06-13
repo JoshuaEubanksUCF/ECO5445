@@ -1,6 +1,6 @@
-# QMB6358S22
+# ECO5445
 
-QMB6358: Software for Business Analytics
+ECO5445: Introduction to Business Analytics
 
 
 <img src="Images/Software_for_Business_Analytics.png" width="500"/>
