@@ -1,5 +1,5 @@
 # Fdb version 3
-["pdflatex"] 1656200900 "Syllabus.tex" "Syllabus.pdf" "Syllabus" 1656200900
+["pdflatex"] 1656370920 "Syllabus.tex" "Syllabus.pdf" "Syllabus" 1656370920
   "/usr/local/texlive/2018/texmf-dist/fonts/map/fontname/texfonts.map" 1511824771 3332 103109f5612ad95229751940c61aada0 ""
   "/usr/local/texlive/2018/texmf-dist/fonts/tfm/public/cm/cmbx10.tfm" 1480098701 1328 c834bbb027764024c09d3d2bf908b5f0 ""
   "/usr/local/texlive/2018/texmf-dist/fonts/tfm/public/cm/cmmi10.tfm" 1480098701 1528 abec98dbc43e172678c11b3b9031252a ""
@@ -61,11 +61,11 @@
   "/usr/local/texlive/2018/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1523934492 2717033 f61a5287d9c22a39a74f1979fe3f905c ""
   "/usr/local/texlive/2018/texmf-var/web2c/pdftex/pdflatex.fmt" 1523934516 4220280 10cab8fbd7c5a7c52aba9917e190d018 ""
   "/usr/local/texlive/2018/texmf.cnf" 1523934483 577 0b39adfd7c93507ff20c9c14c2f1a33f ""
-  "Syllabus.aux" 1656200900 662 b2b94621371df8d9296b8bf5bec1b851 ""
-  "Syllabus.out" 1656200900 0 d41d8cd98f00b204e9800998ecf8427e ""
-  "Syllabus.tex" 1656200900 14004 275d3c3bc8b3cfc9586867809759ec33 ""
+  "Syllabus.aux" 1656370920 662 b2b94621371df8d9296b8bf5bec1b851 ""
+  "Syllabus.out" 1656370920 0 d41d8cd98f00b204e9800998ecf8427e ""
+  "Syllabus.tex" 1656370919 14004 277364a1f13d6dfa21b112909114e2ef ""
   (generated)
-  "Syllabus.log"
   "Syllabus.aux"
   "Syllabus.pdf"
   "Syllabus.out"
+  "Syllabus.log"
