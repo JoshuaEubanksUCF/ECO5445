@@ -12,6 +12,8 @@
 #
 # January 7, 2021
 # 
+# Modified by Joshua L. Eubanks (joshua.eubanks@ucf.edu)
+# Modification Date: 29 Jun 2022
 ##################################################
 #
 # Demo for Chapter 4: Working with Text
@@ -471,8 +473,41 @@ print(species)
  
 
 
+##################################################
+## String Slicing
+##################################################
+
+# Often times you are wanting to extract a subset of a string.
+# Slicing uses [], where 0 is the first index and n-1 is the last
+# Most common slices are
+# string[i]  -> returns character in position i
+# string[:i] -> returns characters from 0 to i-1 (Similar to LEFT in excel)
+# string[i:] -> returns characters from i to n-1 (Similar to RIGHT in excel)
+# string [i:j] -> returns characters from i to j-1 (Similar to MID in excel)
 
 
+
+message = "The quick brown fox jumps over the lazy dog."
+#          01234567890123456789012345678901234567890123
+
+# First element of the text
+message[0]
+
+# Above text is 44 characters long, but the last point is at 43
+
+len(message)
+message[44]
+
+message[43]
+
+# LEFT slice
+message[:3]
+
+# RIGHT slice
+message[4:]
+
+# MID slice
+message[16:19]
 
 ##################################################
 ## End
