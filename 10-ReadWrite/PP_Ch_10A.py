@@ -38,8 +38,8 @@ import os # To set working directory
 # Find out the current directory.
 os.getcwd()
 # Change to a new directory.
-git_path = 'C:\\Users\\le279259\\Documents\\Teaching\\QMB6358_Spring_2022\\GitRepo\\QMB6358S22\\'
-os.chdir(git_path + 'demo_12_PP_Ch_10_Read_Write\\file_examples')
+git_path = 'C:\\Users\\jo585802\\OneDrive - University of Central Florida\\Documents\\GitHub\\ECO5445\\'
+os.chdir(git_path + '\\10-ReadWrite\\file_examples')
 # Check that the change was successful.
 os.getcwd()
 
@@ -370,7 +370,7 @@ with urllib.request.urlopen(url) as webpage:
 
 # git_path = 'C:\\Users\\le279259\\Documents\\Teaching\\QMB6358_Spring_2022\\GitRepo\\QMB6358S22\\'
 
-os.chdir(git_path + 'demo_12_PP_Ch_10_Read_Write\\new_files')
+os.chdir(git_path + '\\10-ReadWrite\\file_examples')
 # Check that the change was successful.
 os.getcwd()
 
@@ -410,152 +410,6 @@ with open('topics.txt', 'a') as output_file:
 
 with open('topics.txt', 'a') as output_file:
     output_file.write('\nSoftware Engineering')
-
-
-
-
-# The next example is more complex: it both reads from and writes to a file.
-# It also uses the typing.TextIO type annotation for the file. 
-# The acronym "IO" is short for "Input/Output".
-
-# This script defines a function that reads two numbers from an input_file
-# and writes those numbers, with their sum, in output_file. 
-
-
-from typing import TextIO
-from io import StringIO
-
-def sum_number_pairs(input_file: TextIO, output_file: TextIO) -> None:
-    """Read the data from input_file, which contains two floats per line
-    separated by a space. output_file for writing and, for each line in
-    input_file, write a line to output_file that contains the two floats from
-    the corresponding line of input_file plus a space and the sum of the two
-    floats.
-    """
-
-    for number_pair in input_file:
-        number_pair = number_pair.strip()
-        operands = number_pair.split()
-        total = float(operands[0]) + float(operands[1])
-        new_line = '{0} {1}\n'.format(number_pair, total)
-        output_file.write(new_line)
-
-
-
-if __name__ == '__main__':
-    with open('number_pairs.txt', 'r') as input_file, \
-            open('number_pair_sums.txt', 'w') as output_file:
-        sum_number_pairs(input_file, output_file)
-
-
-
-
-# Notice that the files are already open in the main program. 
-# The open procedure creates a function handles 
-# that are then passed as arguments in the function 
-# sum_number_pairs and are ready to read and write to those files. 
-
-# Also note that the first "line" of the __main__ program
-# wraps into the second line, with two with statements.
-
-
-# If the input_file called number_pairs.txt contains this content,
-
-# 1.3 3.4
-# 2 4.2
-# -1 1
-
-
-# then, after running sum_number_pairs,
-# the output_file called number_pair_sums.txt will contain the following. 
-
-
-# 1.3 3.4 4.7
-# 2 4.2 6.2
-# -1 1 0.0
-
-
-
-##################################################
-## Writing Example Calls Using StringIO
-##################################################
-
-# So far, we have used the function design recipe to test our files as we write them.
-# This can be problematic for functions that read and write files
-# because the example files must be passed along with the scripts, 
-# in order for your user to be able to learn from the examples. 
-
-# Python provides a class called StringIO in module io that 
-# creates a *mock* open file that you can work with 
-# as if it were a real file. 
-# These StringIO objects can be used anywhere that TextIO
-# objects are expected. 
-
-# In the next example, we create a StringIOobject
-# containing the same information as the file number_pairs.txt above. 
-# The we read the first line as if it were read from the file. 
-
-# from io import StringIO
-input_string = '1.3 3.4\n2 4.2\n-1 1\n'
-infile = StringIO(input_string)
-infile.readline()
-
-
-# We can also write to StringIOobjects as if they were files. 
-# Then we can read their contents as strings using the method getvalue.
-
-
-from io import StringIO
-outfile = StringIO()
-outfile.write('1.3 3.4 4.7\n')
-
-outfile.write('2 4.2 6.2\n')
-
-
-outfile.write('-1 1 0.0\n')
-
-# Now get the values back from the mock file. 
-outfile.getvalue()
-
-
-# Now we can augment our sum_number_pairs function with some examples. 
-
-
-from typing import TextIO
-from io import StringIO
-
-
-def sum_number_pairs(input_file: TextIO, output_file: TextIO) -> None:
-    """Read the data from input_file, which contains two floats per line
-    separated by a space. output_file for writing and, for each line in
-    input_file, write a line to output_file that contains the two floats from
-    the corresponding line of input_file plus a space and the sum of the two
-    floats.
-
-    >>> infile = StringIO('1.3 3.4\\n2 4.2\\n-1 1\\n')
-    >>> outfile = StringIO()
-    >>> sum_number_pairs(infile, outfile)
-    >>> outfile.getvalue()
-    '1.3 3.4 4.7\\n2 4.2 6.2\\n-1 1 0.0\\n'
-    """
-
-    for number_pair in input_file:
-        number_pair = number_pair.strip()
-        operands = number_pair.split()
-        total = float(operands[0]) + float(operands[1])
-        new_line = '{0} {1}\n'.format(number_pair, total)
-        output_file.write(new_line)
-
-
-
-
-if __name__ == '__main__':
-    with open('number_pairs.txt', 'r') as input_file, \
-            open('number_pair_sums.txt', 'w') as output_file:
-        sum_number_pairs(input_file, output_file)
-
-
-# Now test the function to make sure the example functions as expected. 
 
 ##################################################
 # End
