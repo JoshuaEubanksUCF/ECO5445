@@ -185,7 +185,6 @@ for num in values:
     num = num * 2
 
 values
-
  
 # The iterator num is overwritten by its double
 # but it is reset on each iteration to the next item in the loop. 
@@ -490,7 +489,7 @@ while text != "quit":
 
 
 ##################################################
-## Controlling Loops Using break and continue
+## Controlling Loops Using break
 ##################################################
 
 # Two commands can alter the sequence of iterations: break and continue. 
@@ -516,151 +515,6 @@ while True:
         print("Methane")
     else:
         print("Unknown compound")
-
- 
-# Although this works, many programmers judge this to be bad form. 
-# It is more clear to the user when the iterations and stopping conditions
-# are explicitly stated after the for or while keywords. 
-
-
-# Sometimes you will want to use the break command
-# when you are looking for something and want to stop looking after 
-# you have found what you are looking for. 
-
-# In this case, the loop wastefuly continues until the end of the range,
-# regardless of when the digit is found. 
-
- 
-s = 'C3H7'
-digit_index = -1 # This will be -1 until we find a digit.
-for i in range(len(s)):
-    # If we haven't found a digit, and s[i] is a digit
-    if digit_index == -1 and s[i].isdigit():
-        digit_index = i
-
-digit_index
-
- 
-# With the break statement, the loop stops when the job is done. 
-
- 
-s = 'C3H7'
-digit_index = -1 # This will be -1 until we find a digit.
-for i in range(len(s)):
-    # If we find a digit
-    if s[i].isdigit():
-        digit_index = i
-        break  # This exits the loop.
-
-digit_index
-
-# In this case, the initialization digit_index = -1
-# is not required for the operation of the loop. 
-# It is still good practice to assign it a default value
-# so that the variable still exists in memory in case a digit is not found. 
-
-s = 'ABCDE'
-digit_index = -1 # This will be -1 until we find a digit.
-for i in range(len(s)):
-    # If we find a digit
-    if s[i].isdigit():
-        digit_index = i
-        break  # This exits the loop.
-
-digit_index
-
-
-
-#-------------------------------------------------
-### The continue Statement
-#-------------------------------------------------
-
-# The continue statement also alters the flow of a loop. 
-# This command ends the execution within the current block of commands
-# and it immediately proceeds to the next iteration and executes the loop block. 
-
-# Without the continue statement, the execution 
-# proceeds even after finding a letter (an alphabetic character)
-# that cannot be counted in the total. 
-
-s = 'C3H7'                   
-total = 0                    
-count = 0                    
-for i in range(len(s)):      
-    if not s[i].isalpha():
-        total = total + int(s[i])
-        count = count + 1
-
-total
-
-count
-
-
-# This version stops the calculation in the loop 
-# if the character is not numeric and proceeds to the next 
-# character. 
- 
-s = 'C3H7'
-total = 0 # The sum of the digits seen so far.
-count = 0 # The number of digits seen so far.
-for i in range(len(s)):
-    if s[i].isalpha():
-        continue
-    total = total + int(s[i])
-    count = count + 1
-
-total
-
-count
-
-
- 
-# These two programs produce the same output. 
-
-
-#-------------------------------------------------
-### A Warning About break and continue
-#-------------------------------------------------
-
-# Although these are useful tools, they should be used sparingly 
-# (or never, according to many programmers) as they may unnecessarily 
-# complicate the program.
-# Many programmers will not notice the break and continue statements
-# and will get confused after using the for and while
-# statement to get an idea of what the program is doing. 
-# This advice is not only to help others:
-# your program might make sense to you now
-# but *future you* might not remember what you are doing. 
-
-
-
-##################################################
-## Exercises
-##################################################
-
-### Exercise 12:
-
-# Consider this code:
- 
-from typing import List
-
-def remove_neg(num_list: List[float]) -> None:
-    """Remove the negative numbers from the list num_list.
-
-    numbers = [-5, 1, -3, 2]
-    remove_neg(numbers)
-    numbers
-    [1, 2]
-    """
-
-    for item in num_list:
-        if item < 0:
-            num_list.remove(item)
-
- 
-# Test the examples to see whether the code is correct.
-# If not, where is the error?
-# If necessary, revise the code to correct any problems. 
 
 
 ##################################################
