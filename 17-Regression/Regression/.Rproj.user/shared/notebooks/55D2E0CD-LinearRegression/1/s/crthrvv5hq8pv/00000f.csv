@@ -1,0 +1,4 @@
+"0","fit <- lm(Murder ~ Population + Illiteracy + Income +"
+"0","    Frost, data = states)"
+"0","par(mfrow = c(2, 2))"
+"0","plot(fit)"

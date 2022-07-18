@@ -1,0 +1,3 @@
+"0","newfit <- lm(weight ~ height + I(height^2), data = women[-c(13, 15),])"
+"0","par(mfrow = c(2, 2))"
+"0","plot(newfit)"
