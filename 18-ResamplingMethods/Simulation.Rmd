@@ -1,0 +1,216 @@
+---
+title: "Resampling Statistics and Bootstrapping"
+author: "Joshua Eubanks"
+date: '2022-07-20'
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+In order to run the code in this document, you'll need these packages: `install.packages(c('coin','multcomp', 'vcd', 'MASS','lmPerm', 'boot'))`
+
+# T-test vs. OneWay Permutation test
+
+First, let's generate the hypothetical data from table 12.1 from R in Action.
+
+```{r}
+score <- c(40, 57, 45, 55, 58, 57, 64, 55, 62, 65)
+treatment <- factor(c(rep("A", 5), rep("B", 5)))
+mydata <- data.frame(treatment, score)
+```
+
+Traditionally, we would run a two sample t-test to see if there is a difference in the means.
+
+```{r}
+t.test(score ~ treatment, data = mydata, var.equal = TRUE)
+```
+
+The results here show that there is a statistically significant difference between the two means.
+
+However, we assumed a normally distributed test statistic. What we can do instead is "shuffle" the data and calculate this test statistic for each permutation. We can then generate an empirical distribution for the test statistic and see if the original test statistic falls outside the middle 95% of this empirical distribution. If it does, we can say the means of the treatment groups are different.
+
+```{r}
+library(coin)
+oneway_test(score ~ treatment, data = mydata, distribution = "exact")
+```
+
+Now you can see that there is not significant evidence to suggest that the means are different.
+
+# Wilcoxon Mann-Whitney U test
+
+```{r}
+library(MASS) # Bringing this in for dataset
+UScrime <- transform(UScrime, So = factor(So))
+
+wilcox_test(Prob ~ So, data = UScrime, distribution = "exact")
+```
+
+# K-Sample Test
+
+In the past, you have learned about an Anova test to check the differece between many groups
+
+```{r}
+library(multcomp) # for cholesterol dataset 
+
+fit <- aov(response ~ trt, data = cholesterol)
+
+summary(fit)
+```
+
+This assumes the test statistic is distributed F. We can instead generate an empirical distribution of the test statistic.
+
+```{r}
+oneway_test(response ~ trt, data = cholesterol, 
+    distribution = approximate(nresample = 9999))
+```
+
+
+
+
+# independence in contingency tables
+
+This test will check for independence in two categorical varaibles.
+
+```{r}
+library(vcd) # for arthritis dataset
+Arthritis <- transform(Arthritis, 
+    Improved = as.factor(as.numeric(Improved)))
+set.seed(1234)
+chisq_test(Treatment ~ Improved, data = Arthritis, 
+    distribution = approximate(nresample = 9999))
+```
+
+
+
+# independence between numeric variables
+
+Classically, we would simply generate the spearman correlation test statistic in this manner:
+
+```{r}
+states <- as.data.frame(state.x77)
+cor.test(states$Illiteracy,states$Murder, method = "spearman")
+```
+
+
+```{r}
+
+set.seed(1234)
+spearman_test(Illiteracy ~ Murder, data = states, 
+    distribution = approximate(nresample = 9999))
+
+```
+
+
+
+# Listing 12.2 - Permutation tests for simple linear regression
+
+Standard method for linear regression was.
+
+```{r}
+fit <- lm(weight ~ height, data = women)
+summary(fit)
+
+```
+
+In this output that the calculation for the p-value is using the t-distribution. We can make permutations on the heights, run the regression and calculate the test statistic many times to generate an empirical distribution.
+
+```{r}
+library(lmPerm)
+set.seed(1234)
+fit <- lmp(weight ~ height, data = women, perm = "Prob")
+summary(fit)
+```
+
+
+# Listing 12.3 - Permutation tests for polynomial regression
+
+The function is very similar to how we did it previously.
+
+```{r}
+set.seed(1234)
+fit <- lmp(weight ~ height + I(height^2), data = women, perm = "Prob")
+summary(fit)
+
+```
+Comparing the original way:
+
+```{r}
+fit <- lm(weight ~ height + I(height^2), data = women)
+summary(fit)
+```
+
+
+# Listing 12.4 - Permutation tests for multiple regression
+
+It doesn't have to be only for one variable:
+
+```{r}
+states <- as.data.frame(state.x77)
+fit <- lmp(Murder ~ Population + Illiteracy + 
+    Income + Frost, data = states, perm = "Prob")
+summary(fit)
+
+```
+
+
+# Listing 12.5 - Permutation test for One-Way ANOVA
+
+library(lmPerm)
+library(multcomp)
+set.seed(1234)
+fit <- aovp(response ~ trt, data = cholesterol, 
+    perm = "Prob")
+summary(fit)
+
+
+# Bootstrapping
+
+Bootstrapping is another way to estimate a distribution of a test statistic (mean, median, regression coefficients). What is does is randomly generates data for your metric by sampling from your actual data with replacement. The statistic is calculated, then stored. The process happens multiple times to provide a distribution.
+
+## Bootstrapping a single statistic
+
+```{r}
+library(boot) # package used for bootstrapping
+
+# We need to define a function to pull the R-squared value
+
+rsq <- function(formula, data, indices) {
+    d <- data[indices, ]
+    fit <- lm(formula, data = d)
+    return(summary(fit)$r.square)
+}
+
+set.seed(1234)
+results <- boot(data = mtcars, statistic = rsq, 
+    R = 1000, formula = mpg ~ wt + disp)
+print(results)
+plot(results)
+boot.ci(results, type = c("perc", "bca"))
+```
+
+
+## Bootstrapping Several Statistics 
+
+```{r}
+
+bs <- function(formula, data, indices) {
+    d <- data[indices, ]
+    fit <- lm(formula, data = d)
+    return(coef(fit))
+}
+
+library(boot)
+set.seed(1234)
+results <- boot(data = mtcars, statistic = bs, 
+    R = 1000, formula = mpg ~ wt + disp)
+print(results)
+plot(results, index = 2)
+boot.ci(results, type = "bca", index = 2)
+
+```
