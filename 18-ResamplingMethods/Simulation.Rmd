@@ -53,7 +53,7 @@ wilcox_test(Prob ~ So, data = UScrime, distribution = "exact")
 
 # K-Sample Test
 
-In the past, you have learned about an Anova test to check the differece between many groups
+In the past, you have learned about an Anova test to check the difference between many groups
 
 ```{r}
 library(multcomp) # for cholesterol dataset 
@@ -75,7 +75,7 @@ oneway_test(response ~ trt, data = cholesterol,
 
 # independence in contingency tables
 
-This test will check for independence in two categorical varaibles.
+This test will check for independence in two categorical variables.
 
 ```{r}
 library(vcd) # for arthritis dataset
@@ -161,12 +161,16 @@ summary(fit)
 
 # Listing 12.5 - Permutation test for One-Way ANOVA
 
+```{r}
 library(lmPerm)
 library(multcomp)
 set.seed(1234)
 fit <- aovp(response ~ trt, data = cholesterol, 
     perm = "Prob")
 summary(fit)
+
+```
+
 
 
 # Bootstrapping
