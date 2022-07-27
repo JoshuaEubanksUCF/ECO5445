@@ -21,6 +21,8 @@ library(rpart.plot)
 library(party)
 library(randomForest)
 library(e1071)
+
+#install.packages(c("pROC", "rpart","rpart.plot", "party","randomForest","e1071"))
 ```
 
 # The Dataset
