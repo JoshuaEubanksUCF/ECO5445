@@ -1,0 +1,304 @@
+---
+title: "Dimension Reduction"
+author: "Joshua Eubanks"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 2
+    toc_float: true
+    code_folding: hide
+    number_sections: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r packages}
+#install.packages(c("flexclust","rattle","ggplot2","dplyr","tidyr","plotly","plot3d"))
+
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(plotly)
+library(plot3D)
+library(psych)
+
+```
+
+# Unsupervised vs. Supervised Learning
+
+We have dealt with only Supervised learning so far. Now we are going to look into unsupervised learning.
+
+What is the difference? In supervised learning, we were using labelled outcomes to classify data properly. Our data has always had the dependent variable to rely upon. Our model looks at our independent  variables, looks at the dependent variable, then trains the model.
+
+Unsupervised learning however, tries to find its own structure of unlabeled data. We can use this to break down data into its own groups. An example of this is recommendation engines. The model looks at purchasing/viewing patterns, then throws you into a group. Once in that group, you are recommended the same items/content as that group.
+
+# Clustering Methods
+
+There are common steps to cluster analysis.
+
+1. Choosing appropriate attributes
+2. Scaling Data
+3. Calculate Distances
+4. Selecting an Algorithm
+5. Scanning for outliers
+
+
+## Hierarchial Clustering
+
+
+
+```{r}
+data(nutrient,package = "flexclust")
+row.names(nutrient) <- tolower(row.names(nutrient)) # all caps is visually agressive
+
+head(nutrient,4)
+```
+
+Check out the euclidean distances
+
+```{r}
+d <- dist(nutrient)
+
+as.matrix(d)[1:4,1:4]
+```
+
+## Modelling
+
+First, let's scale the data to reduce variance
+
+```{r}
+nutrient.scaled <- scale(nutrient)
+
+head(nutrient.scaled,4)
+```
+
+```{r}
+d <- dist(nutrient.scaled)
+
+fit.average <- hclust(d,method = 'average')
+```
+
+## Plot results
+
+```{r}
+plot(fit.average, hang = -1, cex = 0.8, main = "Average Linking Clustering")
+```
+
+You can use this plot to identify which food types provide similar nutrients.
+
+## K-means Clustering
+
+What's the difference between K-means and Hierarcial? The "K" in K-means forces your data to fall within "K" bins whereas hierical looks at pairwise comparisions. 
+
+### Choosing K
+
+We can run a plot and visually see the optimum number of clusters at the "elbow"
+
+```{r}
+
+wssplot <- function(data, nc = 15, seed = 1234){
+  wss <- (nrow(data)-1)*sum(apply(data,2,var))
+  for (i in 2:nc) {
+    set.seed(seed)
+    wss[i] <- sum(kmeans(data,centers = i)$withinss)
+  }
+  plot(1:nc,wss,type = "b",
+       xlab = "Number of Clusters",
+       ylab = "Within Groups Sum of Squares")
+}
+```
+
+## Wine Example
+
+Comparing data of 13 chemical measurements from 178 wine samples.
+
+### Data Collection
+
+```{r}
+data(wine, package = "rattle")
+
+head(wine, 4)
+
+wine.scaled <- scale(wine[-1])
+```
+
+### Choosing K
+
+```{r}
+wssplot(wine.scaled)
+```
+
+From this plot, the elbow is clearly at 3.
+
+### Running Model
+
+```{r}
+fit.km <- kmeans(wine.scaled, 3, nstart = 25)
+
+fit.km$centers
+```
+
+### Evaluating Performance
+
+```{r}
+ct.km <- table(wine$Type, fit.km$cluster)
+
+flexclust::randIndex(ct.km)
+```
+
+### Visually Checking Results
+
+
+```{r}
+wine$cluster <- fit.km$cluster
+ggplot(wine, aes(y = cluster, 
+                         x = Type, 
+                         col = factor(Type)))+
+  geom_jitter()+
+  labs(x = "Actual Classes", 
+       y = "kmeans Cluster", 
+       title = "Actual Classes and kmeans Clusters")+
+  theme_bw()+
+  scale_color_discrete(name = "Actual Classes")
+
+```
+
+## Your Turn - Zoo Data
+
+We can pull this data from the same site as before, https://archive.ics.uci.edu/ml/datasets/zoo, but I added it for convenience. 
+
+```{r}
+zoo_raw <- read.csv("zoo.csv")
+
+summary(zoo_raw)
+```
+
+From here, build a k-means clustering algorithm. Assess model performance.
+
+
+# Principal Component Analysis
+
+We want to reduce many dimensions into a 2D graph. We do this because the idea is easy to understand and we can identify the most important components of a model
+
+## Data Understanding
+
+We will work on topographic information on Auckland's Maunga Whau volcano. It is a matrix with 87 rows and 61 columns, rows corresponding to grid lines running east to west and columns to grid lines running south to north.
+
+```{r}
+data("volcano")
+
+```
+
+Let's take a look at the volcano in 3D.
+
+```{r}
+plot_ly(z=volcano, type="surface")
+```
+
+```{r}
+# Reduce the resolution
+Volcano <- volcano[seq(1, nrow(volcano), by = 3),
+                   seq(1, ncol(volcano), by = 3)]
+persp3D(z = Volcano, 
+      clab = "m",
+      theta = 120, 
+      phi = 40, 
+      border = NA, 
+      shade = 0.5)
+```
+
+
+## Data Preparation
+
+We have the data in wide-format, but for further processing we need to convert it to tidy-format. Furthermore, it is a matrix format and we want data transform it to a dataframe.
+
+```{r}
+volcano_df <- volcano %>% 
+  as.data.frame() %>%  # transform to dataframe
+  mutate(y = 1:dim(volcano)[1]) %>%  # create new colum y from count of rows
+  gather(key = "x", value = "z", 1:61) %>%  # reshape data from wide to tidy
+  mutate (x = gsub(pattern = "V", replacement = "", x = x)) %>%  # column X is currently character and includes V1, V2, ... we need to remove "V"...
+  mutate(x = as.numeric(x))  # ... and cast it to numeric
+```
+
+# Modeling
+
+Now we can perform principal component analysis. We use function **prcomp()** and pass the dataframe. Also, data needs to be centered and scaled. We save the result in object "volcano_pca".
+
+```{r}
+volcano_pca <- prcomp(x = volcano_df, 
+                      center = T, 
+                      scale. = T)
+```
+
+### Model Results and Plots
+
+```{r}
+summary_pca <- summary(volcano_pca)
+cumm_importance <- summary_pca$importance[2, ] %>% 
+  as.data.frame() %>% 
+  dplyr::rename(importance = ".") %>% 
+  dplyr::mutate(PC = rownames(.)) %>% 
+  dplyr::mutate(dummy_x = "")
+```
+
+```{r}
+g <- ggplot(cumm_importance, aes(x = dummy_x, y = importance*100, fill = PC))
+g <- g + geom_col(position = "stack")
+g <- g + scale_y_continuous(breaks = seq(0, 100, 20))
+g <- g + labs(x = "PC", y = "Cumulated Importance [%]", title = "Cumulated Importance Volcano")
+g <- g + theme_bw()
+g
+```
+
+We can also plot the scree plot.
+
+```{r}
+plot(volcano_pca, type = "l")
+```
+
+Typically, you see some "elbow", which you choose for selecting the number of prinicpal components. Another rule says to choose all components which have a variance > 1. We choose this rule here and select two components.
+
+## Visualisation
+
+```{r}
+volcano_principal_components <- data.frame(PC1 = volcano_pca$x[, 1],
+                         PC2 = volcano_pca$x[, 2],
+                         PC3 = volcano_pca$x[, 3])
+```
+
+Now we can visualise the result.
+
+```{r}
+g <- ggplot(volcano_principal_components, aes(x = PC1, 
+                                              y = PC2))
+                                             # col = PC3))
+#g <- g + scale_color_gradientn(colours = rainbow(5))
+g <- g + geom_point(size = .8, alpha = 0.5)
+g <- g + theme_bw()
+g
+```
+
+
+
+It adds the explained variance per principal component and shows their axes.
+
+## Explained Variance
+
+The standard deviations of components are stored in PCA object as the first list object. We can calculate the variance by squaring the standard deviations.
+
+We want to calculate the sum of variance of first two components divided by the sum of all variance.
+
+```{r}
+volcano_variance <- volcano_pca$sdev**2
+sum(volcano_variance[1:2]) / sum(volcano_variance) *100
+```
+
+
+
+
+
