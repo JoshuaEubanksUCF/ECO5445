@@ -300,5 +300,46 @@ sum(volcano_variance[1:2]) / sum(volcano_variance) *100
 
 
 
+## Example 2 US Judge Ratings
 
+```{r}
+
+data(USJudgeRatings)
+
+
+head(USJudgeRatings)
+```
+
+### Model
+
+```{r}
+judge_pca <- prcomp(x = USJudgeRatings[,-1], 
+                      center = T, 
+                      scale. = T)
+```
+
+### Plot
+
+```{r}
+plot(judge_pca)
+abline(a=1,b=0, lty = "dashed")
+```
+
+eigenvalues less than 1 explain less variance than contained in a single variable
+
+```{r}
+summary_pca <- summary(judge_pca)
+cumm_importance <- summary_pca$importance[2, ] %>% 
+  as.data.frame() %>% 
+  dplyr::rename(importance = ".") %>% 
+  dplyr::mutate(PC = rownames(.)) %>% 
+  dplyr::mutate(dummy_x = "")
+
+ggplot(cumm_importance, aes(x = dummy_x, y = importance*100, fill = PC))+
+  geom_col(position = "stack")+
+  scale_y_continuous(breaks = seq(0, 100, 20))+
+  labs(x = "PC", y = "Cumulated Importance [%]", title = "Cumulated Importance Judicial Rating")+
+  theme_bw()
+
+```
 
